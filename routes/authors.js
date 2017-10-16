@@ -7,11 +7,11 @@ router.get("/new", function(request, response, next) {
 });
 
 router.get("/:id", function(request, response, next) {
-    databaseConnection("author")
-        .select("*", "author.id AS author_id")
-        .leftOuterJoin("book_author", "author.id", "author_id")
-        .leftOuterJoin("book", "book_id", "book.id")
-        .where("author.id", request.params.id)
+    databaseConnection('author')
+        .select("*", "authors.id AS author_id")
+        .leftOuterJoin("book_author", "authors.id", "author_id")
+        .leftOuterJoin("books", "book_id", "books.id")
+        .where("authors.id", request.params.id)
     .then(function(authors){
         var authors = mapBooksToAuthors(authors);
         response.render("authors/get_author", {layout: "authors_layout", author: authors[0]});
@@ -19,10 +19,10 @@ router.get("/:id", function(request, response, next) {
 });
 
 router.get("/", function(request, response, next) {
-    databaseConnection("author")
-        .select("*", "author.id AS author_id")
-        .leftOuterJoin("book_author", "author.id", "author_id")
-        .leftOuterJoin("book", "book_id", "book.id")
+    databaseConnection('author')
+        .select("*", "authors.id AS author_id")
+        .leftOuterJoin("book_author", "authors.id", "author_id")
+        .leftOuterJoin("books", "book_id", "books.id")
     .then(function(records){
         var authors = mapBooksToAuthors(records);
         response.render("authors/list_authors", {layout: "authors_layout", authors: authors});
@@ -30,11 +30,11 @@ router.get("/", function(request, response, next) {
 });
 
 router.get("/delete/:id", function(request, response, next) {
-    databaseConnection("author")
-        .select("*", "author.id AS author_id")
-        .leftOuterJoin("book_author", "author.id", "author_id")
-        .leftOuterJoin("book", "book_id", "book.id")
-        .where("author.id", request.params.id)
+    databaseConnection('author')
+        .select("*", "authors.id AS author_id")
+        .leftOuterJoin("book_author", "authors.id", "author_id")
+        .leftOuterJoin("books", "book_id", "books.id")
+        .where("authors.id", request.params.id)
     .then(function(authors){
         var authors = mapBooksToAuthors(authors);
         response.render("authors/delete_author", {layout: "authors_layout", author: authors[0]});
@@ -43,12 +43,12 @@ router.get("/delete/:id", function(request, response, next) {
 
 router.get("/edit/:id", function(request, response, next) {
     Promise.all([
-        databaseConnection("author")
-            .select("*", "author.id AS author_id")
-            .leftOuterJoin("book_author", "author.id", "author_id")
-            .leftOuterJoin("book", "book_id", "book.id")
-            .where("author.id", request.params.id),
-        databaseConnection("book").select()
+        databaseConnection('author')
+            .select("*", "authors.id AS author_id")
+            .leftOuterJoin("book_author", "authors.id", "author_id")
+            .leftOuterJoin("books", "book_id", "books.id")
+            .where("authors.id", request.params.id),
+        databaseConnection("books").select()
     ]).then(function(results){
         var authors = mapBooksToAuthors(results[0]);
         response.render("authors/edit_author", {layout: "authors_layout", author: authors[0], books: results[1]});
@@ -82,7 +82,7 @@ router.post("/", function(request, response, next) {
     if (errors){
         response.render("error", {errors: errors});
     } else {
-        databaseConnection("author").insert({
+        databaseConnection('author').insert({
             first_name: request.body.first_name,
             last_name: request.body.last_name,
             biography: request.body.biography,
@@ -103,7 +103,7 @@ router.put("/:id", function(request, response, next) {
     if (errors){
         response.render("error", {errors: errors});
     } else {
-        databaseConnection("author").update({
+        databaseConnection('author').update({
             first_name: request.body.first_name,
             last_name: request.body.last_name,
             biography: request.body.biography,
@@ -115,7 +115,7 @@ router.put("/:id", function(request, response, next) {
 });
 
 router.delete("/:id", function(request, response, next) {
-    databaseConnection("author")
+    databaseConnection('author')
         .del()
         .where("id", request.params.id)
     .then(function(){

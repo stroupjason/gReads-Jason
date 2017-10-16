@@ -7,11 +7,11 @@ router.get("/new", function(request, response, next) {
 });
 
 router.get("/:id", function(request, response, next) {
-    databaseConnection("book")
+    databaseConnection("books")
         .select()
-        .innerJoin("book_author", "book.id", "book_id")
-        .innerJoin("author", "author_id", "author.id")
-        .where("book.id", request.params.id)
+        .innerJoin("book_author", "books.id", "book_id")
+        .innerJoin('author', "author_id", "authors.id")
+        .where("books.id", request.params.id)
     .then(function(books){
         var books = mapAuthorsToBooks(books);
         response.render("books/get_book", {layout: "books_layout", book: books[0]});
@@ -19,10 +19,10 @@ router.get("/:id", function(request, response, next) {
 });
 
 router.get("/", function(request, response, next) {
-    databaseConnection("book")
+    databaseConnection("books")
         .select()
-        .innerJoin("book_author", "book.id", "book_id")
-        .innerJoin("author", "author_id", "author.id")
+        .innerJoin("book_author", "books.id", "book_id")
+        .innerJoin('author', "author_id", "authors.id")
     .then(function(records){
         var books = mapAuthorsToBooks(records);
         response.render("books/list_books", {layout: "books_layout", books: books});
@@ -30,11 +30,11 @@ router.get("/", function(request, response, next) {
 });
 
 router.get("/delete/:id", function(request, response, next) {
-    databaseConnection("book")
+    databaseConnection("books")
         .select()
-        .innerJoin("book_author", "book.id", "book_id")
-        .innerJoin("author", "author_id", "author.id")
-        .where("book.id", request.params.id)
+        .innerJoin("book_author", "books.id", "book_id")
+        .innerJoin('author', "author_id", "authors.id")
+        .where("books.id", request.params.id)
     .then(function(books){
         var books = mapAuthorsToBooks(books);
         response.render("books/delete_book", {layout: "books_layout", book: books[0]});
@@ -43,11 +43,11 @@ router.get("/delete/:id", function(request, response, next) {
 
 router.get("/edit/:id", function(request, response, next) {
     Promise.all([
-        databaseConnection("book").select()
-            .innerJoin("book_author", "book.id", "book_id")
-            .innerJoin("author", "author_id", "author.id")
-            .where("book.id", request.params.id),
-        databaseConnection("author").select()
+        databaseConnection("books").select()
+            .innerJoin("book_author", "books.id", "book_id")
+            .innerJoin('author', "author_id", "authors.id")
+            .where("books.id", request.params.id),
+        databaseConnection('author').select()
     ]).then(function(results){
         var books = mapAuthorsToBooks(results[0]);
         response.render("books/edit_book", {layout: "books_layout", book: books[0], authors: results[1]});
@@ -81,7 +81,7 @@ router.post("/", function(request, response, next) {
     if (errors){
         response.render("error", {errors: errors});
     } else {
-        databaseConnection("book").insert({
+        databaseConnection("books").insert({
             title: request.body.title,
             genre: request.body.genre,
             description: request.body.description,
@@ -102,7 +102,7 @@ router.put("/:id", function(request, response, next) {
     if (errors){
         response.render("error", {errors: errors});
     } else {
-        databaseConnection("book").update({
+        databaseConnection("books").update({
             title: request.body.title,
             genre: request.body.genre,
             description: request.body.description,
@@ -115,7 +115,7 @@ router.put("/:id", function(request, response, next) {
 
 router.delete("/:id", function(request, response, next) {
     console.log("got to delete");
-    databaseConnection("book")
+    databaseConnection("books")
         .del()
         .where("id", request.params.id)
     .then(function(){
@@ -137,7 +137,7 @@ function mapAuthorsToBooks(records){
             currentRecord.authors = [author];
             mappedBooks[bookId] = currentRecord;
         } else {
-            mappedBooks[bookId].authors.push(author);
+            mappedBooks[bookId].authors.push('author');
         }
 
         return mappedBooks;

@@ -1,6 +1,6 @@
 // const knex = require("./")
 //
-// const books = knex("book")
+// const books = knex("books")
 //
 // module.exports = {
 //     book: {
