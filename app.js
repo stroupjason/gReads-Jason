@@ -53,6 +53,15 @@ app.use('/', routes);
 app.use('/books', books);
 app.use('/authors', authors);
 
+app.get('/robots.txt', function(req,res){
+  res.status(200).send();
+})
+
+app.get('/favicon.ico', function(req,res){
+  res.status(200).send();
+})
+
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
