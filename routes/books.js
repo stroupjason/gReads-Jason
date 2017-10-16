@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-var databaseConnection = require("../db/queries");
+var databaseConnection = require("../db/database_connection");
 
 router.get("/new", function(request, response, next) {
     response.render("books/add_book", {layout: "books_layout"});

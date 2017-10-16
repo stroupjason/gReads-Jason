@@ -1,6 +1,6 @@
 var express = require("express");
 var router = express.Router();
-var databaseConnection = require("../knexfile.js");
+var databaseConnection = require("../db/database_connection");
 
 router.get("/new", function(request, response, next) {
     response.render("authors/add_author", {layouts: "authors_layout"});
