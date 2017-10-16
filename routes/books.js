@@ -10,7 +10,7 @@ router.get("/:id", function(request, response, next) {
     databaseConnection("books")
         .select()
         .innerJoin("book_author", "books.id", "book_id")
-        .innerJoin('author', "author_id", "authors.id")
+        .innerJoin('authors', "author_id", "authors.id")
         .where("books.id", request.params.id)
     .then(function(books){
         var books = mapAuthorsToBooks(books);
@@ -22,7 +22,7 @@ router.get("/", function(request, response, next) {
     databaseConnection("books")
         .select()
         .innerJoin("book_author", "books.id", "book_id")
-        .innerJoin('author', "author_id", "authors.id")
+        .innerJoin('authors', "author_id", "authors.id")
     .then(function(records){
         var books = mapAuthorsToBooks(records);
         response.render("books/list_books", {layout: "books_layout", books: books});
@@ -33,7 +33,7 @@ router.get("/delete/:id", function(request, response, next) {
     databaseConnection("books")
         .select()
         .innerJoin("book_author", "books.id", "book_id")
-        .innerJoin('author', "author_id", "authors.id")
+        .innerJoin('authors', "author_id", "authors.id")
         .where("books.id", request.params.id)
     .then(function(books){
         var books = mapAuthorsToBooks(books);
@@ -45,9 +45,9 @@ router.get("/edit/:id", function(request, response, next) {
     Promise.all([
         databaseConnection("books").select()
             .innerJoin("book_author", "books.id", "book_id")
-            .innerJoin('author', "author_id", "authors.id")
+            .innerJoin('authors', "author_id", "authors.id")
             .where("books.id", request.params.id),
-        databaseConnection('author').select()
+        databaseConnection('authors').select()
     ]).then(function(results){
         var books = mapAuthorsToBooks(results[0]);
         response.render("books/edit_book", {layout: "books_layout", book: books[0], authors: results[1]});
@@ -137,7 +137,7 @@ function mapAuthorsToBooks(records){
             currentRecord.authors = [author];
             mappedBooks[bookId] = currentRecord;
         } else {
-            mappedBooks[bookId].authors.push('author');
+            mappedBooks[bookId].authors.push('authors');
         }
 
         return mappedBooks;

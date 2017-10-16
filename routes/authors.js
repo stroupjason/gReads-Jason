@@ -7,7 +7,7 @@ router.get("/new", function(request, response, next) {
 });
 
 router.get("/:id", function(request, response, next) {
-    databaseConnection('author')
+    databaseConnection('authors')
         .select("*", "authors.id AS author_id")
         .leftOuterJoin("book_author", "authors.id", "author_id")
         .leftOuterJoin("books", "book_id", "books.id")
@@ -19,7 +19,7 @@ router.get("/:id", function(request, response, next) {
 });
 
 router.get("/", function(request, response, next) {
-    databaseConnection('author')
+    databaseConnection('authors')
         .select("*", "authors.id AS author_id")
         .leftOuterJoin("book_author", "authors.id", "author_id")
         .leftOuterJoin("books", "book_id", "books.id")
@@ -30,7 +30,7 @@ router.get("/", function(request, response, next) {
 });
 
 router.get("/delete/:id", function(request, response, next) {
-    databaseConnection('author')
+    databaseConnection('authors')
         .select("*", "authors.id AS author_id")
         .leftOuterJoin("book_author", "authors.id", "author_id")
         .leftOuterJoin("books", "book_id", "books.id")
@@ -43,7 +43,7 @@ router.get("/delete/:id", function(request, response, next) {
 
 router.get("/edit/:id", function(request, response, next) {
     Promise.all([
-        databaseConnection('author')
+        databaseConnection('authors')
             .select("*", "authors.id AS author_id")
             .leftOuterJoin("book_author", "authors.id", "author_id")
             .leftOuterJoin("books", "book_id", "books.id")
@@ -82,7 +82,7 @@ router.post("/", function(request, response, next) {
     if (errors){
         response.render("error", {errors: errors});
     } else {
-        databaseConnection('author').insert({
+        databaseConnection('authors').insert({
             first_name: request.body.first_name,
             last_name: request.body.last_name,
             biography: request.body.biography,
@@ -103,7 +103,7 @@ router.put("/:id", function(request, response, next) {
     if (errors){
         response.render("error", {errors: errors});
     } else {
-        databaseConnection('author').update({
+        databaseConnection('authors').update({
             first_name: request.body.first_name,
             last_name: request.body.last_name,
             biography: request.body.biography,
@@ -115,7 +115,7 @@ router.put("/:id", function(request, response, next) {
 });
 
 router.delete("/:id", function(request, response, next) {
-    databaseConnection('author')
+    databaseConnection('authors')
         .del()
         .where("id", request.params.id)
     .then(function(){
