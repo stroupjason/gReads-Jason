@@ -1,8 +1,8 @@
-exports.seed = function(knex, Promise){
+exports.seed = function (knex, Promise) {
     return Promise.all([
         knex('authors').del(),
         knex("book_author").del()
-    ]).then(function(){
+    ]).then(function () {
         return Promise.all([
             knex('authors').insert({
                 first_name: "Alex",
@@ -41,58 +41,58 @@ exports.seed = function(knex, Promise){
                 portrait_url: "https://s3-us-west-2.amazonaws.com/assessment-images/galvanize_reads/photos/kyle_simpson.jpg"
             }).returning("id")
         ]);
-    }).then(function(authorIds){
-        var authorIds = authorIds.map(function(currentId){
+    }).then(function (authorIds) {
+        var authorIds = authorIds.map(function (currentId) {
             return currentId[0]; // each authorId is stored as an single-element array
         });
         var bookAuthors = [{
             bookTitle: "Python In A Nutshell",
             authorId: authorIds[0]
-        },{
+        }, {
             bookTitle: "Python In A Nutshell",
             authorId: authorIds[1]
-        },{
+        }, {
             bookTitle: "Python In A Nutshell",
             authorId: authorIds[2]
-        },{
+        }, {
             bookTitle: "Think Python",
             authorId: authorIds[3]
-        },{
+        }, {
             bookTitle: "Learning React Native",
             authorId: authorIds[4]
-        },{
+        }, {
             bookTitle: "You Don't Know JS: ES6 & Beyond",
             authorId: authorIds[5]
-        },{
+        }, {
             bookTitle: "You Don't Know JS: Scope & Closures",
             authorId: authorIds[5]
-        },{
+        }, {
             bookTitle: "You Don't Know JS: Async & Performance",
             authorId: authorIds[5]
         }];
 
-        return Promise.all(bookAuthors.map(function(currentBookAuthor){
-            return getBookIdByTitle(currentBookAuthor.bookTitle, knex, Promise).then(function(books){
+        return Promise.all(bookAuthors.map(function (currentBookAuthor) {
+            return getBookIdByTitle(currentBookAuthor.bookTitle, knex, Promise).then(function (books) {
                 return insertBookAuthor(books.id, currentBookAuthor.authorId, knex, Promise);
             });
         }))
     });
 }
 
-function getBookIdByTitle(bookTitle, knex, Promise){
-    return new Promise(function(resolve, reject){
-        knex("books").select("id").where("title", bookTitle).then(function(books){
+function getBookIdByTitle(bookTitle, knex, Promise) {
+    return new Promise(function (resolve, reject) {
+        knex("books").select("id").where("title", bookTitle).then(function (books) {
             resolve(books[0]);
         });
     });
 }
 
-function insertBookAuthor(bookId, authorId, knex, Promise){
-    return new Promise(function(resolve, reject){
+function insertBookAuthor(bookId, authorId, knex, Promise) {
+    return new Promise(function (resolve, reject) {
         knex("book_author").insert({
             book_id: parseInt(bookId),
             author_id: parseInt(authorId)
-        }).then(function(){
+        }).then(function () {
             resolve();
         });
     });

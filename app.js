@@ -7,9 +7,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var expressValidator = require('express-validator');
-//var methodOveride = require('method-overide');
-var sassMiddleware = require('node-sass-middleware');
-
+//var sassMiddleware = require('node-sass-middleware'); //appears unused
 var routes = require('./routes/index');
 var books = require('./routes/books');
 var authors = require('./routes/authors');
@@ -46,9 +44,7 @@ app.use(require('node-sass-Middleware')({
   indentedSyntax: false, // true = .sass and false = .scss
   sourceMap: true
 }));
-
 app.use(express.static(path.join(__dirname, 'public')));
-
 app.use('/', routes);
 app.use('/books', books);
 app.use('/authors', authors);
@@ -56,11 +52,9 @@ app.use('/authors', authors);
 app.get('/robots.txt', function(req,res){
   res.status(200).send();
 })
-
 app.get('/favicon.ico', function(req,res){
   res.status(200).send();
 })
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -68,7 +62,6 @@ app.use(function(req, res, next) {
   err.status = 404;
   res.status(404).send('File Not Found');
 });
-
 // error handlers
 //print a stacktrace for developers
   app.use(function(err, req, res, next) {
@@ -80,14 +73,5 @@ app.use(function(req, res, next) {
     error: err
    });
  });
-
-
-// app.use(function(err, req, res, next){
-//   res.status(err.status || 500);
-//   res.render("error", {
-//     message: err.message,
-//     error: {}
-//   });
-// });
 
 module.exports = app;
