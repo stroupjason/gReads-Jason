@@ -2,138 +2,169 @@ var express = require("express");
 var router = express.Router();
 var databaseConnection = require("../db/database_connection");
 
-router.get("/new", function(request, response, next) {
-    response.render("authors/add_author", {layouts: "authors_layout"});
+router.get("/new", function (request, response, next) {
+    response.render("authors/add_author", {
+        layouts: "authors_layout"
+    });
 });
 
-router.get("/:id", function(request, response, next) {
+router.get("/:id", function (request, response, next) {
     databaseConnection('authors')
         .select("*", "authors.id AS author_id")
         .leftOuterJoin("book_author", "authors.id", "author_id")
         .leftOuterJoin("books", "book_id", "books.id")
         .where("authors.id", request.params.id)
-    .then(function(authors){
-        var authors = mapBooksToAuthors(authors);
-        response.render("authors/get_author", {layout: "authors_layout", author: authors[0]});
-    });
+        .then(function (authors) {
+            var authors = mapBooksToAuthors(authors);
+            response.render("authors/get_author", {
+                layout: "authors_layout",
+                author: authors[0]
+            });
+        });
 });
 
-router.get("/", function(request, response, next) {
+router.get("/", function (request, response, next) {
     databaseConnection('authors')
         .select("*", "authors.id AS author_id")
         .leftOuterJoin("book_author", "authors.id", "author_id")
         .leftOuterJoin("books", "book_id", "books.id")
-    .then(function(records){
-        var authors = mapBooksToAuthors(records);
-        response.render("authors/list_authors", {layout: "authors_layout", authors: authors});
-    });
+        .then(function (records) {
+            var authors = mapBooksToAuthors(records);
+            response.render("authors/list_authors", {
+                layout: "authors_layout",
+                authors: authors
+            });
+        });
 });
 
-router.get("/delete/:id", function(request, response, next) {
+router.get("/delete/:id", function (request, response, next) {
     databaseConnection('authors')
         .select("*", "authors.id AS author_id")
         .leftOuterJoin("book_author", "authors.id", "author_id")
         .leftOuterJoin("books", "book_id", "books.id")
         .where("authors.id", request.params.id)
-    .then(function(authors){
-        var authors = mapBooksToAuthors(authors);
-        response.render("authors/delete_author", {layout: "authors_layout", author: authors[0]});
-    });
+        .then(function (authors) {
+            var authors = mapBooksToAuthors(authors);
+            response.render("authors/delete_author", {
+                layout: "authors_layout",
+                author: authors[0]
+            });
+        });
 });
 
-router.get("/edit/:id", function(request, response, next) {
+router.get("/edit/:id", function (request, response, next) {
     Promise.all([
         databaseConnection('authors')
-            .select("*", "authors.id AS author_id")
-            .leftOuterJoin("book_author", "authors.id", "author_id")
-            .leftOuterJoin("books", "book_id", "books.id")
-            .where("authors.id", request.params.id),
+        .select("*", "authors.id AS author_id")
+        .leftOuterJoin("book_author", "authors.id", "author_id")
+        .leftOuterJoin("books", "book_id", "books.id")
+        .where("authors.id", request.params.id),
         databaseConnection("books").select()
-    ]).then(function(results){
+    ]).then(function (results) {
         var authors = mapBooksToAuthors(results[0]);
-        response.render("authors/edit_author", {layout: "authors_layout", author: authors[0], books: results[1]});
+        response.render("authors/edit_author", {
+            layout: "authors_layout",
+            author: authors[0],
+            books: results[1]
+        });
     });
 });
 
-router.post("/:author_id/books", function(request, response, next) {
+router.post("/:author_id/books", function (request, response, next) {
     databaseConnection("book_author").insert({
         book_id: parseInt(request.body.book_id),
         author_id: parseInt(request.params.author_id)
-    }).then(function(){
+    }).then(function () {
         response.redirect("/authors");
     });
 });
-router.delete("/:author_id/books/:book_id", function(request, response, next) {
+router.delete("/:author_id/books/:book_id", function (request, response, next) {
     databaseConnection("book_author").delete().where({
         book_id: parseInt(request.params.book_id),
         author_id: parseInt(request.params.author_id)
-    }).then(function(){
+    }).then(function () {
         response.redirect("/authors");
     });
 });
 
-router.post("/", function(request, response, next) {
-    request.checkBody("first_name", "First name is empty or too long").notEmpty().isLength({max: 255});
-    request.checkBody("last_name", "Last name is empty or too long").notEmpty().isLength({max: 255});
-    request.checkBody("biography", "Biography is too long").isLength({max: 10000});
+router.post("/", function (request, response, next) {
+    request.checkBody("first_name", "First name is empty or too long").notEmpty().isLength({
+        max: 255
+    });
+    request.checkBody("last_name", "Last name is empty or too long").notEmpty().isLength({
+        max: 255
+    });
+    request.checkBody("biography", "Biography is too long").isLength({
+        max: 10000
+    });
     request.checkBody("portrait_url", "Not a URL").isUrl(request.body.portrait_url);
 
     var errors = request.validationErrors();
-    if (errors){
-        response.render("error", {errors: errors});
+    if (errors) {
+        response.render("error", {
+            errors: errors
+        });
     } else {
         databaseConnection('authors').insert({
             first_name: request.body.first_name,
             last_name: request.body.last_name,
             biography: request.body.biography,
             portrait_url: request.body.portrait_url
-        }).then(function(){
+        }).then(function () {
             response.redirect("/authors");
         });
     }
 });
 
-router.put("/:id", function(request, response, next) {
-    request.checkBody("first_name", "First name is empty or too long").notEmpty().isLength({max: 255});
-    request.checkBody("last_name", "Last name is empty or too long").notEmpty().isLength({max: 255});
-    request.checkBody("biography", "Biography is too long").isLength({max: 10000});
+router.put("/:id", function (request, response, next) {
+    request.checkBody("first_name", "First name is empty or too long").notEmpty().isLength({
+        max: 255
+    });
+    request.checkBody("last_name", "Last name is empty or too long").notEmpty().isLength({
+        max: 255
+    });
+    request.checkBody("biography", "Biography is too long").isLength({
+        max: 10000
+    });
     request.checkBody("portrait_url", "Not a URL").isUrl(request.body.portrait_url);
 
     var errors = request.validationErrors();
-    if (errors){
-        response.render("error", {errors: errors});
+    if (errors) {
+        response.render("error", {
+            errors: errors
+        });
     } else {
         databaseConnection('authors').update({
             first_name: request.body.first_name,
             last_name: request.body.last_name,
             biography: request.body.biography,
             portrait_url: request.body.portrait_url
-        }).where("id", request.params.id).then(function(){
+        }).where("id", request.params.id).then(function () {
             response.redirect("/authors");
         });
     }
 });
 
-router.delete("/:id", function(request, response, next) {
+router.delete("/:id", function (request, response, next) {
     databaseConnection('authors')
         .del()
         .where("id", request.params.id)
-    .then(function(){
-        response.redirect("/authors");
-    });
+        .then(function () {
+            response.redirect("/authors");
+        });
 });
 
 module.exports = router;
 
-function mapBooksToAuthors(records){
-    var mappedAuthors = records.reduce(function(mappedAuthors, currentRecord){
+function mapBooksToAuthors(records) {
+    var mappedAuthors = records.reduce(function (mappedAuthors, currentRecord) {
         currentRecord = reassignAuthorIdToId(currentRecord);
         var authorId = currentRecord.id
 
         var book = extractBookFromRecord(currentRecord);
         currentRecord = deleteBookFromRecord(currentRecord);
 
-        if (!mappedAuthors.hasOwnProperty(authorId)){
+        if (!mappedAuthors.hasOwnProperty(authorId)) {
             currentRecord.books = [book];
             mappedAuthors[authorId] = currentRecord;
         } else {
@@ -144,13 +175,13 @@ function mapBooksToAuthors(records){
     }, {});
 
     var authors = [];
-    for (var authorId in mappedAuthors){
+    for (var authorId in mappedAuthors) {
         authors.push(mappedAuthors[authorId]);
     }
     return authors;
 }
 
-function extractBookFromRecord(record){
+function extractBookFromRecord(record) {
     return {
         id: record.book_id,
         title: record.title,
@@ -160,19 +191,19 @@ function extractBookFromRecord(record){
     };
 }
 
-function deleteBookFromRecord(record){
+function deleteBookFromRecord(record) {
     var properties = [
         "book_id", "title", "genre", "description", "cover_url"
     ];
 
-    for (var i = 0, length = properties.length; i < length; i++){
+    for (var i = 0, length = properties.length; i < length; i++) {
         delete record[properties[i]];
     }
 
     return record;
 }
 
-function reassignAuthorIdToId(record){
+function reassignAuthorIdToId(record) {
     record.id = record.author_id;
     delete record.author_id;
     return record;
