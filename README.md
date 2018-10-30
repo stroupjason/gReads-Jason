@@ -10,3 +10,9 @@ Galvanize Reads-Jason is a book catalog service that stores a list of recommende
 ## Development
 
 Clone this repo and run npm start
+
+          --  --
+	 -- -- --
+	  --  --
+	   ----
+	    --
